@@ -13,6 +13,8 @@
 	import SouthArrow from '../lib/assets/arrow_south.svelte';
 	import SouthEastArrow from '../lib/assets/arrow_south_east.svelte';
 
+	// TYPES
+	//=========================
 	type StepMatrixPossibilities =
 		| typeof NorthWestArrow
 		| typeof NorthArrow
@@ -24,6 +26,8 @@
 		| typeof SouthArrow
 		| typeof SouthEastArrow;
 
+	// VARIABLES
+	//=========================
 	const stepMatrixPossibilities: StepMatrixPossibilities[][] = [
 		[NorthWestArrow, NorthArrow, NorthEastArrow],
 		[WestArrow, Center, EastArrow],
@@ -43,14 +47,25 @@
 
 	let startTime: number;
 
-	// Reactive variables.
+	// REACTIVE VARIABLES
+	//=========================
+	// Control Flow
 	$: isRunning = false;
 	$: hasStarted = false;
-	$: drillDuration = 65;
-	$: stepDuration = 5;
+
+	// User Inputs
+	$: inputDrillDuration = 65;
+	$: drillDuration = inputDrillDuration * 1000;
+
+	$: inputStepDuration = 5;
+	$: stepDuration = inputStepDuration * 1000;
+
+	// Timer
 	$: elapsedTime = 0;
 	$: timeLeft = drillDuration - elapsedTime;
 
+	// FUNCTIONS
+	//=========================
 	function selectRandomStep(): void {
 		var rand1 = Math.floor(Math.random() * stepMatrix.length);
 		var rand2 = Math.floor(Math.random() * stepMatrix[0].length);
@@ -76,15 +91,16 @@
 		let tempStartTime = startTime;
 
 		if (hasStarted) {
-			tempStartTime -= elapsedTime * 1000;
+			tempStartTime -= elapsedTime;
 		}
 
 		elapsedTimeInterval = setInterval(
-			() => (elapsedTime = Math.floor((Date.now() - tempStartTime) / 1000)),
+			// Rounds down to the nearest second.
+			() => (elapsedTime = Math.floor((Date.now() - tempStartTime) / 1000) * 1000),
 			1000
 		);
 
-		selectRandomStepInterval = setInterval(selectRandomStep, stepDuration * 1000);
+		selectRandomStepInterval = setInterval(selectRandomStep, stepDuration);
 
 		isRunning = true;
 		hasStarted = true;
@@ -150,13 +166,23 @@
 	</div>
 
 	<div class="input-container">
-		<label for="drillDuration">Drill Duration (seconds)</label>
-		<input name="drillDuration" type="number" bind:value={drillDuration} disabled={isRunning} />
+		<label for="inputDrillDuration">Drill Duration (seconds)</label>
+		<input
+			name="inputDrillDuration"
+			type="number"
+			bind:value={inputDrillDuration}
+			disabled={isRunning}
+		/>
 	</div>
 
 	<div class="input-container">
-		<label for="stepDuration">Step Duration (seconds)</label>
-		<input name="stepDuration" type="number" bind:value={stepDuration} disabled={isRunning} />
+		<label for="inputStepDuration">Step Duration (seconds)</label>
+		<input
+			name="inputStepDuration"
+			type="number"
+			bind:value={inputStepDuration}
+			disabled={isRunning}
+		/>
 	</div>
 </div>
 

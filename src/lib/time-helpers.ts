@@ -1,9 +1,10 @@
-export function printTime(duration: number): string {
-	const hours = Math.floor(duration / 3600);
+export function printTime(durationInMilliseconds: number): string {
+	durationInMilliseconds = durationInMilliseconds / 1000;
+	const hours = Math.floor(durationInMilliseconds / 3600);
 
-	duration = duration - hours * 3600;
-	const minutes = Math.floor(duration / 60);
-	const seconds = duration - minutes * 60;
+	durationInMilliseconds = durationInMilliseconds - hours * 3600;
+	const minutes = Math.floor(durationInMilliseconds / 60);
+	const seconds = durationInMilliseconds - minutes * 60;
 
 	const hoursString = hours.toString().padStart(2, '0');
 	const minutesString = minutes.toString().padStart(2, '0');
