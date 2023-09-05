@@ -70,19 +70,19 @@
 	}
 
 	function startFootworkDrill(): void {
+		resetIntervals();
+
 		startTime = Date.now();
+		let tempStartTime = startTime;
 
 		if (hasStarted) {
-			elapsedTimeInterval = setInterval(
-				() => (elapsedTime += Math.floor((Date.now() - startTime) / 1000)),
-				1000
-			);
-		} else {
-			elapsedTimeInterval = setInterval(
-				() => (elapsedTime = Math.floor((Date.now() - startTime) / 1000)),
-				1000
-			);
+			tempStartTime -= elapsedTime * 1000;
 		}
+
+		elapsedTimeInterval = setInterval(
+			() => (elapsedTime = Math.floor((Date.now() - tempStartTime) / 1000)),
+			1000
+		);
 
 		selectRandomStepInterval = setInterval(selectRandomStep, stepDuration * 1000);
 
@@ -91,12 +91,7 @@
 	}
 
 	function stopFootworkDrill(): void {
-		if (selectRandomStepInterval) {
-			clearInterval(selectRandomStepInterval);
-		}
-		if (elapsedTimeInterval) {
-			clearInterval(elapsedTimeInterval);
-		}
+		resetIntervals();
 		isRunning = false;
 	}
 
@@ -107,6 +102,15 @@
 		elapsedTime = 0;
 		startTime = Date.now();
 		hasStarted = false;
+	}
+
+	function resetIntervals(): void {
+		if (selectRandomStepInterval) {
+			clearInterval(selectRandomStepInterval);
+		}
+		if (elapsedTimeInterval) {
+			clearInterval(elapsedTimeInterval);
+		}
 	}
 </script>
 
