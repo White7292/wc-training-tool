@@ -1,5 +1,5 @@
-<script>
-	import { printTime } from '../lib/time-helpers.ts';
+<script lang="ts">
+	import { printTime } from '../lib/time-helpers';
 
 	import NorthWestArrow from '../lib/assets/arrow_north_west.svelte';
 	import NorthArrow from '../lib/assets/arrow_north.svelte';
@@ -13,47 +13,51 @@
 	import SouthArrow from '../lib/assets/arrow_south.svelte';
 	import SouthEastArrow from '../lib/assets/arrow_south_east.svelte';
 
-	const stepMatrixPossibilities = [
+	type StepMatrixPossibilities =
+		| typeof NorthWestArrow
+		| typeof NorthArrow
+		| typeof NorthEastArrow
+		| typeof WestArrow
+		| typeof Center
+		| typeof EastArrow
+		| typeof SouthWestArrow
+		| typeof SouthArrow
+		| typeof SouthEastArrow;
+
+	const stepMatrixPossibilities: StepMatrixPossibilities[][] = [
 		[NorthWestArrow, NorthArrow, NorthEastArrow],
 		[WestArrow, Center, EastArrow],
 		[SouthWestArrow, SouthArrow, SouthEastArrow]
 	];
-	let stepMatrix = new Array(3).fill(undefined).map(() => new Array(3).fill(undefined));
+
+	let defaultStepMatrix: StepMatrixPossibilities[][] | undefined[][] = new Array(3)
+		.fill(undefined)
+		.map(() => new Array(3).fill(undefined));
+
+	let stepMatrix = defaultStepMatrix;
 
 	let arrowProps = { size: 200 };
 
-	/**
-	 * @type {NodeJS.Timeout | undefined}
-	 */
-	let selectRandomStepInterval = undefined;
+	let selectRandomStepInterval: NodeJS.Timeout;
+	let elapsedTimeInterval: NodeJS.Timeout;
 
-	/**
-	 * @type {NodeJS.Timeout | undefined}
-	 */
-	let elapsedTimeInterval = undefined;
+	let startTime: number;
 
-	/**
-	 * @type {number | undefined}
-	 */
-	let startTime = undefined;
-
-	let isRunning = false;
-	let hasStarted = false;
-
+	// Reactive variables.
+	$: isRunning = false;
+	$: hasStarted = false;
 	$: drillDuration = 65;
 	$: stepDuration = 5;
 	$: elapsedTime = 0;
 	$: timeLeft = drillDuration - elapsedTime;
 
-	function resetStepMatrix() {
-		stepMatrix = new Array(3).fill('').map(() => new Array(3).fill(''));
-	}
-
-	function selectRandomStep() {
+	function selectRandomStep(): void {
 		var rand1 = Math.floor(Math.random() * stepMatrix.length);
 		var rand2 = Math.floor(Math.random() * stepMatrix[0].length);
 
-		while (stepMatrix[rand1][rand2] === 1) {
+		// TODO (#368): Implement "back to center" mode.
+		// Ensure that we're not picking the same square again to keep things dynamic.
+		while (stepMatrix[rand1][rand2] === stepMatrixPossibilities[rand1][rand2]) {
 			rand1 = Math.floor(Math.random() * stepMatrix.length);
 			rand2 = Math.floor(Math.random() * stepMatrix[0].length);
 		}
@@ -65,7 +69,7 @@
 		stepMatrix = tempMatrix;
 	}
 
-	function startFootworkDrill() {
+	function startFootworkDrill(): void {
 		startTime = Date.now();
 
 		if (hasStarted) {
@@ -86,7 +90,7 @@
 		hasStarted = true;
 	}
 
-	function stopFootworkDrill() {
+	function stopFootworkDrill(): void {
 		if (selectRandomStepInterval) {
 			clearInterval(selectRandomStepInterval);
 		}
@@ -96,8 +100,8 @@
 		isRunning = false;
 	}
 
-	function resetFootworkDrill() {
-		resetStepMatrix();
+	function resetFootworkDrill(): void {
+		stepMatrix = defaultStepMatrix;
 		stopFootworkDrill();
 
 		elapsedTime = 0;
