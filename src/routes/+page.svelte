@@ -84,6 +84,11 @@
 		stepMatrix = tempMatrix;
 	}
 
+	function incrementTimerByOneSecond(startTime: number): void {
+		// Rounds down to the nearest second.
+		elapsedTime = Math.floor((Date.now() - startTime) / 1000) * 1000;
+	}
+
 	function startFootworkDrill(): void {
 		resetIntervals();
 
@@ -94,11 +99,7 @@
 			tempStartTime -= elapsedTime;
 		}
 
-		elapsedTimeInterval = setInterval(
-			// Rounds down to the nearest second.
-			() => (elapsedTime = Math.floor((Date.now() - tempStartTime) / 1000) * 1000),
-			1000
-		);
+		elapsedTimeInterval = setInterval(() => incrementTimerByOneSecond(tempStartTime), 1000);
 
 		selectRandomStepInterval = setInterval(selectRandomStep, stepDuration);
 
@@ -161,7 +162,12 @@
 		{/if}
 		<button on:click={resetFootworkDrill}>Reset</button>
 		<span class="time-display">
-			{printTime(elapsedTime)} / {printTime(drillDuration)} (-{printTime(timeLeft)})
+			{printTime(elapsedTime)} / {printTime(drillDuration)}
+			{#if elapsedTime > drillDuration}
+				(+{printTime(Math.abs(timeLeft))})
+			{:else}
+				(-{printTime(Math.abs(timeLeft))})
+			{/if}
 		</span>
 	</div>
 
