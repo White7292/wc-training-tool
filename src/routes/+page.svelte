@@ -154,13 +154,7 @@
 </div>
 
 <div class="drill-controls">
-	<div class="buttons-container">
-		{#if !isRunning}
-			<button on:click={startFootworkDrill}>Start</button>
-		{:else}
-			<button on:click={stopFootworkDrill}>Stop</button>
-		{/if}
-		<button on:click={resetFootworkDrill}>Reset</button>
+	<div class="timer-container">
 		<span class="time-display">
 			{printTime(elapsedTime)} / {printTime(drillDuration)}
 			{#if elapsedTime > drillDuration}
@@ -169,6 +163,14 @@
 				(-{printTime(Math.abs(timeLeft))})
 			{/if}
 		</span>
+	</div>
+	<div class="buttons-container">
+		{#if !isRunning}
+			<button on:click={startFootworkDrill}>Start</button>
+		{:else}
+			<button on:click={stopFootworkDrill}>Stop</button>
+		{/if}
+		<button on:click={resetFootworkDrill}>Reset</button>
 	</div>
 
 	<div class="input-container">
@@ -208,6 +210,6 @@
 	}
 
 	.time-display {
-		font-size: 24px;
+		font-size: 92px;
 	}
 </style>
